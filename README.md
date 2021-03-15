@@ -1,4 +1,4 @@
-## Lean Test
+### Lean Test
 
 
 
@@ -18,10 +18,11 @@ User management system with login and registration screen with dashboard
 * [Next.js](https://nextjs.org/)
 * [ReactJS](https://reactjs.org/)
 * [TypeScript](https://www.typescriptlang.org/)
+* [Vercel](https://vercel.com/)
 
 ## Getting Started
 
-To run the project locally follow these steps and it will be working :)
+Go to the vercel hosted [here](https://lean-test.vercel.app/) or to run the project locally follow these steps and it will be working :)
 
 ### Prerequisites
 
