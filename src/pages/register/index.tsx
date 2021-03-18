@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
-
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/router';
 
 import {
   Flex,
@@ -12,24 +12,31 @@ import {
   Heading,
   Link,
 } from '@chakra-ui/react';
-
-import { useRouter } from 'next/router';
+import { AiOutlineUser, AiOutlineMail } from 'react-icons/ai';
 
 import Icon from '@/components/elements/Icon';
 
-import { AiOutlineUser, AiOutlineMail } from 'react-icons/ai';
+import { encryptPassword } from '@/utils/crypt';
 
 const Register: FC = () => {
   const { register, handleSubmit } = useForm();
   const router = useRouter();
 
-  const handleRegister = (dataForm: any) => {
+  const handleRegister = async (dataForm: any) => {
     let users = JSON.parse(localStorage.getItem('@lean/users')!);
 
     if (!users.find((user: any) => user.email === dataForm.email)) {
-      users.push(dataForm);
+      const user = {
+        name: dataForm.name,
+        email: dataForm.email,
+        password: await encryptPassword(dataForm.password),
+      };
+
+      users.push(user);
+
       localStorage.setItem('@lean/users', JSON.stringify(users));
-      localStorage.setItem('@lean/current', JSON.stringify(dataForm));
+      localStorage.setItem('@lean/current', JSON.stringify(user));
+
       router.push('/dashboard');
     } else alert('User already exists');
   };

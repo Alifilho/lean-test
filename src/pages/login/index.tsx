@@ -1,6 +1,6 @@
 import { FC } from 'react';
-
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/router';
 
 import {
   Flex,
@@ -12,27 +12,25 @@ import {
   Heading,
   Link,
 } from '@chakra-ui/react';
+import { AiOutlineMail } from 'react-icons/ai';
+import { RiLockPasswordFill } from 'react-icons/ri';
 
 import Icon from '@/components/elements/Icon';
 
-import { AiOutlineMail } from 'react-icons/ai';
-import { RiLockPasswordFill } from 'react-icons/ri';
-import { useRouter } from 'next/router';
+import { verifyPassword } from '@/utils/crypt';
 
 const Login: FC = () => {
   const { register, handleSubmit } = useForm();
   const router = useRouter();
 
-  const handleLogin = (dataForm: any) => {
+  const handleLogin = async (dataForm: any) => {
     let users = JSON.parse(localStorage.getItem('@lean/users')!);
 
     if (!users) alert('User not found, please register');
     else {
-      const user = users.find(
-        (user: any) =>
-          user.email === dataForm.email && user.password === dataForm.password
-      );
-      if (user) {
+      const user = users.find((user: any) => user.email === dataForm.email);
+
+      if (user && (await verifyPassword(user.password, dataForm.password))) {
         localStorage.setItem('@lean/current', JSON.stringify(user));
         router.push('/dashboard');
       } else alert('Invalid credentials');

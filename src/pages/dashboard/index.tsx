@@ -25,9 +25,11 @@ import {
   InputLeftElement,
   useDisclosure,
 } from '@chakra-ui/react';
+import { AiOutlineUser, AiOutlineMail } from 'react-icons/ai';
 
 import Icon from '@/components/elements/Icon';
-import { AiOutlineUser, AiOutlineMail } from 'react-icons/ai';
+
+import { encryptPassword } from '@/utils/crypt';
 
 const Dashboard: FC = () => {
   const { register, handleSubmit } = useForm();
@@ -54,17 +56,24 @@ const Dashboard: FC = () => {
     if (user.email === currentUser.email) return logoff();
   };
 
-  const addUser = (dataForm: any) => {
+  const addUser = async (dataForm: any) => {
     const newUsers = [...usersList];
 
     if (newUsers.find((user: any) => user.email === dataForm.email))
       return alert('User already register');
 
-    newUsers.push(dataForm);
+    newUsers.push({
+      name: dataForm.name,
+      email: dataForm.email,
+      password: await encryptPassword(dataForm.password),
+    });
 
     alert('User registered successfully');
+
     setUsersList([...newUsers]);
+
     localStorage.setItem('@lean/users', JSON.stringify(newUsers));
+
     onClose();
   };
 
