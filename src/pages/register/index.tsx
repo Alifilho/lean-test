@@ -17,15 +17,19 @@ import { AiOutlineUser, AiOutlineMail } from 'react-icons/ai';
 import Icon from '@/components/elements/Icon';
 
 import { encryptPassword } from '@/utils/crypt';
+import { getUsers, setUsers } from '@/services/users';
+import { setUser } from '@/services/auth';
+
+import User from '@/interfaces/models/User';
 
 const Register: FC = () => {
   const { register, handleSubmit } = useForm();
   const router = useRouter();
 
-  const handleRegister = async (dataForm: any) => {
-    let users = JSON.parse(localStorage.getItem('@lean/users')!);
+  const handleRegister = async (dataForm: User) => {
+    let users = getUsers();
 
-    if (!users.find((user: any) => user.email === dataForm.email)) {
+    if (!users.find((user: User) => user.email === dataForm.email)) {
       const user = {
         name: dataForm.name,
         email: dataForm.email,
@@ -34,17 +38,17 @@ const Register: FC = () => {
 
       users.push(user);
 
-      localStorage.setItem('@lean/users', JSON.stringify(users));
-      localStorage.setItem('@lean/current', JSON.stringify(user));
+      setUsers(users);
+      setUser(user);
 
       router.push('/dashboard');
     } else alert('User already exists');
   };
 
   useEffect(() => {
-    let users = JSON.parse(localStorage.getItem('@lean/users')!);
+    let users = getUsers();
 
-    if (!users) localStorage.setItem('@lean/users', JSON.stringify([]));
+    if (!users) setUsers([]);
   }, []);
 
   return (

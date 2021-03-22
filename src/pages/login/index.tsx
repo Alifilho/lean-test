@@ -18,20 +18,25 @@ import { RiLockPasswordFill } from 'react-icons/ri';
 import Icon from '@/components/elements/Icon';
 
 import { verifyPassword } from '@/utils/crypt';
+import { getUsers } from '@/services/users';
+import { setUser } from '@/services/auth';
+
+import User from '@/interfaces/models/User';
 
 const Login: FC = () => {
   const { register, handleSubmit } = useForm();
   const router = useRouter();
 
-  const handleLogin = async (dataForm: any) => {
-    let users = JSON.parse(localStorage.getItem('@lean/users')!);
+  const handleLogin = async (dataForm: User) => {
+    let users = getUsers();
 
     if (!users) alert('User not found, please register');
     else {
-      const user = users.find((user: any) => user.email === dataForm.email);
+      const user = users.find((user: User) => user.email === dataForm.email);
 
       if (user && (await verifyPassword(user.password, dataForm.password))) {
-        localStorage.setItem('@lean/current', JSON.stringify(user));
+        setUser(user);
+
         router.push('/dashboard');
       } else alert('Invalid credentials');
     }

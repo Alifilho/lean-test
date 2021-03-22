@@ -30,17 +30,26 @@ import { AiOutlineUser, AiOutlineMail } from 'react-icons/ai';
 import Icon from '@/components/elements/Icon';
 
 import { encryptPassword } from '@/utils/crypt';
+import { deleteUser, getUser } from '@/services/auth';
+import { setUsers, getUsers } from '@/services/users';
+
+import User from '@/interfaces/models/User';
 
 const Dashboard: FC = () => {
   const { register, handleSubmit } = useForm();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
 
-  const [currentUser, setCurrentUser] = useState<any>({});
-  const [usersList, setUsersList] = useState<any>([]);
+  const [usersList, setUsersList] = useState<User[]>([]);
+  const [currentUser, setCurrentUser] = useState<User>({
+    email: '',
+    password: '',
+    name: '',
+  });
 
   const logoff = () => {
-    localStorage.removeItem('@lean/current');
+    deleteUser();
+
     router.push('/login');
   };
 
@@ -51,15 +60,15 @@ const Dashboard: FC = () => {
     newUsers.splice(index, 1);
 
     setUsersList([...newUsers]);
-    localStorage.setItem('@lean/users', JSON.stringify(newUsers));
+    setUsers(newUsers);
 
     if (user.email === currentUser.email) return logoff();
   };
 
-  const addUser = async (dataForm: any) => {
+  const addUser = async (dataForm: User) => {
     const newUsers = [...usersList];
 
-    if (newUsers.find((user: any) => user.email === dataForm.email))
+    if (newUsers.find((user: User) => user.email === dataForm.email))
       return alert('User already register');
 
     newUsers.push({
@@ -72,14 +81,14 @@ const Dashboard: FC = () => {
 
     setUsersList([...newUsers]);
 
-    localStorage.setItem('@lean/users', JSON.stringify(newUsers));
+    setUsers(newUsers);
 
     onClose();
   };
 
   useEffect(() => {
-    const current = JSON.parse(localStorage.getItem('@lean/current')!);
-    const users = JSON.parse(localStorage.getItem('@lean/users')!);
+    const current = getUser();
+    const users = getUsers();
 
     if (!current || !users) router.push('/login');
 
@@ -110,7 +119,7 @@ const Dashboard: FC = () => {
             </Thead>
 
             <Tbody>
-              {usersList.map((user: any, index: number) => (
+              {usersList.map((user, index) => (
                 <Tr key={`${user.name}-${index}`}>
                   <Td>{user.name}</Td>
                   <Td>{user.email}</Td>
